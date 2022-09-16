@@ -39,7 +39,7 @@ var fwdPerc = flag.Float64("percentage", 100, "Must be between 0 and 100.")
 var fwdBy = flag.String("percentage-by", "", "Can be empty. Otherwise, valid values are: header, remoteaddr.")
 var fwdHeader = flag.String("percentage-by-header", "", "If percentage-by is header, then specify the header here.")
 var reqPort = flag.Int("filter-request-port", 80, "Must be between 0 and 65535.")
-var fwdMap map[string]string{}
+var fwdMap map[string]string
 
 
 // Build a simple HTTP request parser using tcpassembly.StreamFactory and tcpassembly.Stream interfaces
