@@ -25,7 +25,6 @@ import (
 	"net/http"
 	"os"
 	"time"
-	"encoding/json"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/examples/util"
