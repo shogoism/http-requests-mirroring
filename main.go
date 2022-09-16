@@ -73,7 +73,6 @@ func (h *httpStream) run() {
 		} else if err != nil {
 			log.Println("Error reading stream", h.net, h.transport, ":", err)
 		} else {
-			fmt.Printf("httpStream[%%#v] -> %#v\n", h)
 			reqSourceIP := h.net.Src().String()
 			reqDestionationPort := h.transport.Dst().String()
 			body, bErr := ioutil.ReadAll(req.Body)
@@ -81,6 +80,7 @@ func (h *httpStream) run() {
 				return
 			}
 			req.Body.Close()
+			fmt.Printf("body[%%#v] -> %#v\n", body)
 			go forwardRequest(req, reqSourceIP, reqDestionationPort, body)
 		}
 	}
