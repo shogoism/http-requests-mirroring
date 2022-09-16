@@ -199,8 +199,6 @@ func main() {
 		err = fmt.Errorf("Flag percentage-by is set to header, but percentage-by-header is empty.")
 	} else if *reqPort > 65535 || *reqPort < 0 {
 		err = fmt.Errorf("Flag filter-request-port is not between 0 and 65535. Value: %f.", *fwdPerc)
-	} else {
-		err = json.Unmarshal([]byte(*routeTableJson), &fwdMap)
 	}
 	if err != nil {
 		log.Fatal(err)
