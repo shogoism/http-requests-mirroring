@@ -34,11 +34,11 @@ import (
 	"github.com/google/gopacket/tcpassembly/tcpreader"
 )
 
+var fwdDestinationAlb = flag.String("destination-alb", "", "Destination of the forwarded requests.")
 var fwdPerc = flag.Float64("percentage", 100, "Must be between 0 and 100.")
 var fwdBy = flag.String("percentage-by", "", "Can be empty. Otherwise, valid values are: header, remoteaddr.")
 var fwdHeader = flag.String("percentage-by-header", "", "If percentage-by is header, then specify the header here.")
 var reqPort = flag.Int("filter-request-port", 80, "Must be between 0 and 65535.")
-
 
 // Build a simple HTTP request parser using tcpassembly.StreamFactory and tcpassembly.Stream interfaces
 
@@ -123,8 +123,15 @@ func forwardRequest(req *http.Request, reqSourceIP string, reqDestionationPort s
 		}
 	}
 
+	// Get ALB ipaddress.
+	addr, err := net.ResolveIPAddr("ip", *fwdDestinationAlb)
+	if err != nil {
+		return
+	}
+	fmt.Println("Resovle addr is ", addr.String())
+
 	// create a new url from the raw RequestURI sent by the client
-	url := fmt.Sprintf("%s%s", string("http://"+req.Host), req.RequestURI)
+	url := fmt.Sprintf("%s%s", string("http://"+addr.String()), req.RequestURI)
 	log.Print(url)
 
 	// create a new HTTP request
@@ -132,6 +139,9 @@ func forwardRequest(req *http.Request, reqSourceIP string, reqDestionationPort s
 	if err != nil {
 		return
 	}
+
+	// Overwrite host.
+	forwardReq.Host = req.Host
 
 	// add headers to the new HTTP request
 	for header, values := range req.Header {
