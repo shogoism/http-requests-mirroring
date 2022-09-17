@@ -80,6 +80,7 @@ func (h *httpStream) run() {
 				return
 			}
 			req.Body.Close()
+			fmt.Printf("body[%%#v] -> %#v\n", body)
 			go forwardRequest(req, reqSourceIP, reqDestionationPort, body)
 		}
 	}
