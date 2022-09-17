@@ -130,6 +130,8 @@ func forwardRequest(req *http.Request, reqSourceIP string, reqDestionationPort s
 		return
 	}
 	url := fmt.Sprintf("%s%s", string(fwdMap[req.Header.Get("Origin")]), req.RequestURI)
+	log.Print(req.Header.Get("Origin"))
+	log.Print(fwdMap[req.Header.Get("Origin")])
 	log.Print(url)
 
 	// create a new HTTP request
