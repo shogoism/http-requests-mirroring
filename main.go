@@ -158,6 +158,7 @@ func forwardRequest(req *http.Request, reqSourceIP string, reqDestionationPort s
 	}
 
 	// Execute the new HTTP request
+	fmt.Printf("forwardReq[%%#v] -> %#v\n", forwardReq)
 	httpClient := &http.Client{}
 	resp, rErr := httpClient.Do(forwardReq)
 	if rErr != nil {
