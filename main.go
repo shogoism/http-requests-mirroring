@@ -34,7 +34,7 @@ import (
 	"github.com/google/gopacket/tcpassembly/tcpreader"
 )
 
-var fwdDestinationAlb = flag.String("destination-alb", "", "Destination of the forwarded requests.")
+var fwdDestination = flag.String("destination", "", "Destination of the forwarded requests.")
 var fwdPerc = flag.Float64("percentage", 100, "Must be between 0 and 100.")
 var fwdBy = flag.String("percentage-by", "", "Can be empty. Otherwise, valid values are: header, remoteaddr.")
 var fwdHeader = flag.String("percentage-by-header", "", "If percentage-by is header, then specify the header here.")
@@ -80,7 +80,6 @@ func (h *httpStream) run() {
 				return
 			}
 			req.Body.Close()
-			fmt.Printf("body[%%#v] -> %#v\n", body)
 			go forwardRequest(req, reqSourceIP, reqDestionationPort, body)
 		}
 	}
@@ -124,16 +123,8 @@ func forwardRequest(req *http.Request, reqSourceIP string, reqDestionationPort s
 		}
 	}
 
-	// Get ALB ipaddress.
-	addr, err := net.ResolveIPAddr("ip", *fwdDestinationAlb)
-	if err != nil {
-		return
-	}
-	fmt.Println("Resovle addr is ", addr.String())
-
 	// create a new url from the raw RequestURI sent by the client
-	url := fmt.Sprintf("%s%s", string("http://"+addr.String()), req.RequestURI)
-	log.Print(url)
+	url := fmt.Sprintf("%s%s", string(*fwdDestination), req.RequestURI)
 
 	// create a new HTTP request
 	forwardReq, err := http.NewRequest(req.Method, url, bytes.NewReader(body))
