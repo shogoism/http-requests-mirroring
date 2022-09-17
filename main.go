@@ -126,10 +126,10 @@ func forwardRequest(req *http.Request, reqSourceIP string, reqDestionationPort s
 	}
 
 	// create a new url from the raw RequestURI sent by the client
-	if fwdMap[reqSourceIP] == "" {
+	if fwdMap[req.Header.Get("Origin")] == "" {
 		return
 	}
-	url := fmt.Sprintf("%s%s", string(fwdMap[reqSourceIP]), req.RequestURI)
+	url := fmt.Sprintf("%s%s", string(fwdMap[req.Header.Get("Origin")]), req.RequestURI)
 	log.Print(url)
 
 	// create a new HTTP request
