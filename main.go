@@ -14,6 +14,7 @@ import (
 	"bytes"
 	crypto_rand "crypto/rand"
 	"encoding/binary"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"hash/crc64"
@@ -34,11 +35,12 @@ import (
 	"github.com/google/gopacket/tcpassembly/tcpreader"
 )
 
-var fwdDestination = flag.String("destination", "", "Destination of the forwarded requests.")
+var routeTableJson = flag.String("route-table-json", "", "Map of source ip and destination ip.")
 var fwdPerc = flag.Float64("percentage", 100, "Must be between 0 and 100.")
 var fwdBy = flag.String("percentage-by", "", "Can be empty. Otherwise, valid values are: header, remoteaddr.")
 var fwdHeader = flag.String("percentage-by-header", "", "If percentage-by is header, then specify the header here.")
 var reqPort = flag.Int("filter-request-port", 80, "Must be between 0 and 65535.")
+var fwdMap map[string]string
 
 // Build a simple HTTP request parser using tcpassembly.StreamFactory and tcpassembly.Stream interfaces
 
@@ -124,16 +126,14 @@ func forwardRequest(req *http.Request, reqSourceIP string, reqDestionationPort s
 	}
 
 	// create a new url from the raw RequestURI sent by the client
-	url := fmt.Sprintf("%s%s", string(*fwdDestination), req.RequestURI)
+	url := fmt.Sprintf("%s%s", string(fwdMap[reqSourceIP]), req.RequestURI)
+	log.Print(url)
 
 	// create a new HTTP request
 	forwardReq, err := http.NewRequest(req.Method, url, bytes.NewReader(body))
 	if err != nil {
 		return
 	}
-
-	// Overwrite host.
-	forwardReq.Host = req.Host
 
 	// add headers to the new HTTP request
 	for header, values := range req.Header {
@@ -158,7 +158,6 @@ func forwardRequest(req *http.Request, reqSourceIP string, reqDestionationPort s
 	}
 
 	// Execute the new HTTP request
-	fmt.Printf("forwardReq[%%#v] -> %#v\n", forwardReq)
 	httpClient := &http.Client{}
 	resp, rErr := httpClient.Do(forwardReq)
 	if rErr != nil {
@@ -201,6 +200,8 @@ func main() {
 		err = fmt.Errorf("Flag percentage-by is set to header, but percentage-by-header is empty.")
 	} else if *reqPort > 65535 || *reqPort < 0 {
 		err = fmt.Errorf("Flag filter-request-port is not between 0 and 65535. Value: %f.", *fwdPerc)
+	} else {
+		err = json.Unmarshal([]byte(*routeTableJson), &fwdMap)
 	}
 	if err != nil {
 		log.Fatal(err)
