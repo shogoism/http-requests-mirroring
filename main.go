@@ -126,6 +126,10 @@ func forwardRequest(req *http.Request, reqSourceIP string, reqDestionationPort s
 		}
 	}
 
+	// excluding health checker.
+	if strings.Contains(req.UserAgent(),"ELB-HealthChecker") {
+		return
+	}
 	// excluding resource files.
 	if strings.Contains(req.RequestURI, ".html") {
 		return
