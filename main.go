@@ -155,10 +155,13 @@ func forwardRequest(req *http.Request, reqSourceIP string, reqDestionationPort s
 	if strings.Contains(req.RequestURI, ".svg") {
 		return
 	}
+	if strings.Contains(req.RequestURI, ".webp") {
+		return
+	}
 
 	// create a new url from the raw RequestURI sent by the client
 	if fwdMap[req.Host] == "" {
-		fmt.Printf("Request Host "+req.Host+" is not found in augment route-table-json. (%#v\n)",req)
+		fmt.Printf("Request Host "+req.Host+" is not found in augment route-table-json. (%#v)",req)
 		return
 	}
 	url := fmt.Sprintf("%s%s", string(fwdMap[req.Host]), req.RequestURI)
