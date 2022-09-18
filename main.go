@@ -25,6 +25,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/google/gopacket"
@@ -125,13 +126,41 @@ func forwardRequest(req *http.Request, reqSourceIP string, reqDestionationPort s
 		}
 	}
 
-	//create a new url from the raw RequestURI sent by the client
-	//if fwdMap[req.Host] == "" {
-	//	return
-	//}
+	// excluding resource files.
+	if strings.Contains(req.RequestURI, ".html") {
+		return
+	}
+	if strings.Contains(req.RequestURI, ".js") {
+		return
+	}
+	if strings.Contains(req.RequestURI, ".css") {
+		return
+	}
+	if strings.Contains(req.RequestURI, ".gif") {
+		return
+	}
+	if strings.Contains(req.RequestURI, ".png") {
+		return
+	}
+	if strings.Contains(req.RequestURI, ".jpeg") {
+		return
+	}
+	if strings.Contains(req.RequestURI, ".jpg") {
+		return
+	}
+	if strings.Contains(req.RequestURI, ".css") {
+		return
+	}
+	if strings.Contains(req.RequestURI, ".css") {
+		return
+	}
+
+	// create a new url from the raw RequestURI sent by the client
+	if fwdMap[req.Host] == "" {
+		log.Print("req.Host:"+req.Host+"is not found in augment route-table-json")
+		return
+	}
 	url := fmt.Sprintf("%s%s", string(fwdMap[req.Host]), req.RequestURI)
-	log.Print("req.Host:"+req.Host)
-	log.Print("fwdMap[req.Host]:"+fwdMap[req.Host])
 	log.Print(url)
 
 	// create a new HTTP request
