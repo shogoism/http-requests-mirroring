@@ -154,7 +154,7 @@ func forwardRequest(req *http.Request, reqSourceIP string, reqDestionationPort s
 
 	// create a new url from the raw RequestURI sent by the client
 	if fwdMap[req.Host] == "" {
-		log.Print("Request Host "+req.Host+" is not found in augment route-table-json. ("+ req.RequestURI +")")
+		fmt.Printf("Request Host "+req.Host+" is not found in augment route-table-json. (%#v\n)",req)
 		return
 	}
 	url := fmt.Sprintf("%s%s", string(fwdMap[req.Host]), req.RequestURI)
