@@ -134,6 +134,9 @@ func forwardRequest(req *http.Request, reqSourceIP string, reqDestionationPort s
 	if strings.Contains(req.RequestURI, ".html") {
 		return
 	}
+	if strings.Contains(req.RequestURI, ".txt") {
+		return
+	}
 	if strings.Contains(req.RequestURI, ".js") {
 		return
 	}
