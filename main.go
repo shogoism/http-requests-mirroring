@@ -65,7 +65,7 @@ func (h *httpStreamFactory) New(net, transport gopacket.Flow) tcpassembly.Stream
 	// ReaderStream implements tcpassembly.Stream, so we can return a pointer to it.
 	return &hstream.r
 }
-
+ 
 func (h *httpStream) run() {
 	buf := bufio.NewReader(&h.r)
 	for {
@@ -168,7 +168,7 @@ func forwardRequest(req *http.Request, reqSourceIP string, reqDestionationPort s
 		return
 	}
 	url := fmt.Sprintf("%s%s", string(fwdMap[req.Host]), req.RequestURI)
-	//log.Print(url)
+	log.Print(url)
 
 	// create a new HTTP request
 	forwardReq, err := http.NewRequest(req.Method, url, bytes.NewReader(body))
